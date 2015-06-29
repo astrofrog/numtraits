@@ -10,12 +10,14 @@ This simple module defines a descriptor class that can be used to define
 numerical properties (scalar and n-dimensional arrays) on classes and provide a
 way to validate these:
 
-    from numprops import NumericalProperty
+```python
+from numprops import NumericalProperty
 
-    class Source(object):
+class Source(object):
 
-        radius = NumericalProperty('radius', domain='strictly-positive')
-        position = NumericalProperty('position', shape=(3,))
+    radius = NumericalProperty('radius', domain='strictly-positive')
+    position = NumericalProperty('position', shape=(3,))
+```
         
 When a property is set, it will be validated:
 
