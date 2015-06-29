@@ -21,19 +21,21 @@ class Source(object):
         
 When a property is set, it will be validated:
 
-    >>> s = Source()
-    >>> s.radius = 1.
-    >>> s.radius = -3
-    ...
-    ValueError: radius should be strictly positive
-    >>> s.position = (1,2,3)
-    >>> s.position = 3
-    ...
-    TypeError: position should be a 1-d sequence
-    >>> s.position = (1,2,3,4)
-    ...
-    ValueError: position has incorrect length (expected 3 but found 4)
-    
+```python
+>>> s = Source()
+>>> s.radius = 1.
+>>> s.radius = -3
+...
+ValueError: radius should be strictly positive
+>>> s.position = (1,2,3)
+>>> s.position = 3
+...
+TypeError: position should be a 1-d sequence
+>>> s.position = (1,2,3,4)
+...
+ValueError: position has incorrect length (expected 3 but found 4)
+```
+
 Planned support
 ---------------
 
