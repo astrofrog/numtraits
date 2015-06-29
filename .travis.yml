@@ -1,0 +1,19 @@
+language: c
+
+env:
+  matrix:
+    - PYTHON_VERSION=2.6
+    - PYTHON_VERSION=2.7
+    - PYTHON_VERSION=3.3
+    - PYTHON_VERSION=3.4
+
+before_install:
+    - source .continuous-integration/travis/setup_environment_$TRAVIS_OS_NAME.sh
+    - conda create --yes -n test python=$PYTHON_VERSION
+    - source activate test
+
+install:
+    - conda install --yes pip pytest
+
+script:
+    - py.test
