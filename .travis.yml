@@ -14,6 +14,10 @@ before_install:
 
 install:
     - conda install --yes pip pytest
+    - pip install coveralls pytest-cov
 
 script:
-    - py.test
+    - py.test --cov .
+    
+after_success:
+  - coveralls
