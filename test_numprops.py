@@ -80,6 +80,10 @@ class TestArray(object):
     f = NumericalProperty('f', domain=(3, 4), shape=(3,))
     g = NumericalProperty('g', shape=(3, 4))
 
+    # Two properties that should be set to the same shape
+    h = NumericalProperty('h', shape='i')
+    i = NumericalProperty('i', shape='h')
+
     def test_simple(self):
         self.a = (1,2,3)
 
@@ -142,3 +146,15 @@ class TestArray(object):
         with pytest.raises(TypeError) as exc:
             self.g = np.ones((3, 6, 3))
         assert exc.value.args[0] == "g should be a 2-d array"
+
+    def test_invalid(self):
+        with pytest.raises(TypeError) as exc:
+            self.a = [[1.], [1., 2.]]
+        assert exc.value.args[0] == "Could not convert value of a to a Numpy array (Exception: setting an array element with a sequence.)"
+
+    def test_copy_shape(self):
+        self.h = np.ones((3,4))
+        self.i = np.ones((3,4))
+        with pytest.raises(ValueError) as exc:
+            self.i = np.ones((4, 5))
+        assert exc.value.args[0] == "i has incorrect shape (expected (3, 4) but found (4, 5))"
