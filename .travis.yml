@@ -13,7 +13,7 @@ before_install:
     - source activate test
 
 install:
-    - conda install --yes pip pytest
+    - conda install --yes pip pytest numpy
     - pip install coveralls pytest-cov
 
 script:
