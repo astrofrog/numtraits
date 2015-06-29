@@ -1,7 +1,7 @@
 Numerical properties for Python objects
 =======================================
 
-[![Travis Build Status](https://travis-ci.org/astrofrog/numprops.svg?branch=master)](https://travis-ci.org/astrofrog/numprops) - [![Coverage Status](https://coveralls.io/repos/astrofrog/numprops/badge.svg)](https://coveralls.io/r/astrofrog/numprops)
+[![Travis Build Status](https://travis-ci.org/astrofrog/numprops.svg?branch=master)](https://travis-ci.org/astrofrog/numprops) [![Coverage Status](https://coveralls.io/repos/astrofrog/numprops/badge.svg)](https://coveralls.io/r/astrofrog/numprops)
 
 About
 -----
