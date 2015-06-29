@@ -78,6 +78,7 @@ class TestArray(object):
     d = NumericalProperty('d', domain='negative', shape=(3,))
     e = NumericalProperty('e', domain='strictly-negative', shape=(3,))
     f = NumericalProperty('f', domain=(3, 4), shape=(3,))
+    g = NumericalProperty('g', shape=(3, 4))
 
     def test_simple(self):
         self.a = (1,2,3)
@@ -130,3 +131,9 @@ class TestArray(object):
         with pytest.raises(ValueError) as exc:
             self.f = (0., 3.5, 7.)
         assert exc.value.args[0] == "All values of f should be in the range [3:4]"
+
+    def test_shape_2d(self):
+        self.g = np.ones((3, 4))
+        with pytest.raises(ValueError) as exc:
+            self.g = np.ones((3, 6))
+        assert exc.value.args[0] == "g has incorrect shape (expected (3, 4) but found (3, 6))"
