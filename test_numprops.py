@@ -137,3 +137,8 @@ class TestArray(object):
         with pytest.raises(ValueError) as exc:
             self.g = np.ones((3, 6))
         assert exc.value.args[0] == "g has incorrect shape (expected (3, 4) but found (3, 6))"
+
+    def test_ndim_2d(self):
+        with pytest.raises(TypeError) as exc:
+            self.g = np.ones((3, 6, 3))
+        assert exc.value.args[0] == "g should be a 2-d array"
