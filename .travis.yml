@@ -6,6 +6,7 @@ env:
     - PYTHON_VERSION=2.7 UNITPKG=false
     - PYTHON_VERSION=3.3 UNITPKG=false
     - PYTHON_VERSION=3.4 UNITPKG=false
+    - PYTHON_VERSION=2.6 UNITPKG=true
     - PYTHON_VERSION=2.7 UNITPKG=true
     - PYTHON_VERSION=3.3 UNITPKG=true
     - PYTHON_VERSION=3.4 UNITPKG=true
@@ -23,8 +24,7 @@ install:
         conda install --yes astropy;
         pip install quantities pint;
       fi
-
-
+    - if [[ $PYTHON_VERSION == 2.6 ]]; then conda install --yes unittest2; fi
 
 script:
     - py.test --cov .
