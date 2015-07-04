@@ -27,6 +27,9 @@ When a property is set, it will be validated:
 >>> s.radius = -3
 ...
 ValueError: radius should be strictly positive
+>>> s.radius = [1,2]
+...
+TypeError: radius should be a scalar value
 >>> s.position = (1,2,3)
 >>> s.position = 3
 ...
