@@ -18,7 +18,8 @@ before_install:
 install:
     - conda install --yes pip pytest numpy
     - pip install coveralls pytest-cov
-    - if [ $UNITPKG ] then;
+    - if [ $UNITPKG ];
+      then
         conda install --yes astropy;
         pip install quantities pint;
       fi
