@@ -44,7 +44,7 @@ Physical units
 
 While ``NumericalProperty`` can be used for plain scalars and Numpy arrays, it
 can also be used for scalars and arrays which have associated units, with support for three
-populate unit handling units:
+popular unit handling units:
 [astropy.units](docs.astropy.org/en/stable/units/),
 [pint](http://pint.readthedocs.org/), and
 [quantities](https://pythonhosted.org/quantities/).
