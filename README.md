@@ -39,6 +39,14 @@ TypeError: position should be a 1-d sequence
 ValueError: position has incorrect length (expected 3 but found 4)
 ```
 
+The following arguments to ``NumericalProperty`` are available (in addition to the property name):
+
+* ``ndim``: restrict the values to arrays with this number of dimension
+* ``shape``: restrict the values to arrays with this shape. If specified, ``ndim`` does not need to be given.
+* ``domain``: restrict the values to a particular domain - can be one of ``positive``, ``strictly-positive``, ``negative``, ``strictly-negative``, or a tuple representing a range of values.
+* ``default``: the default value to return, if not specified (defaults to ``None``)
+* ``convertible_to``: restrict the values to ones with units that would be convertible to a specific set of units (see section below)
+
 Physical units
 --------------
 
