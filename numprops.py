@@ -174,6 +174,8 @@ def _assert_unit_convertability(name, value, target_unit):
             if value.dimensionality != target_unit.dimensionality:
                 raise ValueError("{0} should be in units convertible to {1}".format(name, target_unit.units))
 
+            return
+
     if HAS_QUANTITIES:
 
         from quantities.unitquantity import IrreducibleUnit
@@ -187,4 +189,4 @@ def _assert_unit_convertability(name, value, target_unit):
             if value.dimensionality.simplified != target_unit.dimensionality.simplified:
                 raise ValueError("{0} should be in units convertible to {1}".format(name, target_unit.dimensionality.string))
 
-        # Since we don't want to convert all values in an array,
+            return
