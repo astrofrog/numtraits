@@ -280,3 +280,10 @@ class TestQuantitiesUnits(object):
         with pytest.raises(ValueError) as exc:
             self.b = np.ones((2, 5)) * pq.s
         assert exc.value.args[0] == 'b should be in units convertible to cm/s'
+
+
+def test_inconsistent_ndim_shape():
+
+    with pytest.raises(ValueError) as exc:
+        a = NumericalProperty('a', ndim=3, shape=(3,3))
+    assert exc.value.args[0] == "shape=(3, 3) and ndim=3 for property 'a' are inconsistent"

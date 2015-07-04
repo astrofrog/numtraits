@@ -16,7 +16,7 @@ class NumericalProperty(object):
                 ndim = len(shape)
             else:
                 if ndim != len(shape):
-                    raise ValueError("shape={0} and ndim={1} are inconsistent".format(shape, ndim))
+                    raise ValueError("shape={0} and ndim={1} for property '{2}' are inconsistent".format(shape, ndim, name))
 
         self.ndim = ndim
         self.shape = shape
@@ -75,19 +75,11 @@ class NumericalProperty(object):
 
         if self.shape is not None:
 
-            if isinstance(self.shape, str):
-                if getattr(instance, self.shape) is None:
-                    expected_shape = None
-                else:
-                    expected_shape = getattr(instance, self.shape).shape
-            else:
-                expected_shape = self.shape
-
-            if expected_shape is not None and np.any(num_value.shape != expected_shape):
+            if self.shape is not None and np.any(num_value.shape != self.shape):
                 if self.ndim == 1:
-                    raise ValueError("{0} has incorrect length (expected {1} but found {2})".format(self.name, expected_shape[0], num_value.shape[0]))
+                    raise ValueError("{0} has incorrect length (expected {1} but found {2})".format(self.name, self.shape[0], num_value.shape[0]))
                 else:
-                    raise ValueError("{0} has incorrect shape (expected {1} but found {2})".format(self.name, expected_shape, num_value.shape))
+                    raise ValueError("{0} has incorrect shape (expected {1} but found {2})".format(self.name, self.shape, num_value.shape))
 
         if self.target_unit is not None:
             _assert_unit_convertability(self.name, value, self.target_unit)
@@ -118,14 +110,14 @@ class NumericalProperty(object):
 
 try:
     import astropy.units
-except:
+except ImportError:  # pragma: no cover
     HAS_ASTROPY = False
 else:
     HAS_ASTROPY = True
 
 try:
     import pint
-except:
+except ImportError:  # pragma: no cover
     HAS_PINT = False
 else:
     HAS_PINT = True
@@ -133,7 +125,7 @@ else:
 
 try:
     import quantities
-except:
+except ImportError:  # pragma: no cover
     HAS_QUANTITIES = False
 else:
     HAS_QUANTITIES = True
