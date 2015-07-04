@@ -19,15 +19,12 @@ before_install:
 install:
     - conda install --yes pip pytest numpy
     - pip install coveralls pytest-cov
-    - if [ $UNITPKG ];
-      then
-        conda install --yes astropy;
-        pip install quantities pint;
-      fi
+    - if [[ $UNITPKG == true ]]; then conda install --yes astropy; fi
+    - if [[ $UNITPKG == true ]]; then pip install quantities pint; fi
     - if [[ $PYTHON_VERSION == 2.6 ]]; then conda install --yes unittest2; fi
 
 script:
-    - py.test --cov .
+    - py.test --cov numprops.py
 
 after_success:
   - coveralls
