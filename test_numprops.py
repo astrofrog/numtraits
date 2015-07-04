@@ -6,12 +6,12 @@ from numprops import NumericalProperty
 
 class TestScalar(object):
 
-    a = NumericalProperty('a')
-    b = NumericalProperty('b', domain='positive')
-    c = NumericalProperty('c', domain='strictly-positive')
-    d = NumericalProperty('d', domain='negative')
-    e = NumericalProperty('e', domain='strictly-negative')
-    f = NumericalProperty('f', domain=(3, 4))
+    a = NumericalProperty('a', ndim=0)
+    b = NumericalProperty('b', ndim=0, domain='positive')
+    c = NumericalProperty('c', ndim=0, domain='strictly-positive')
+    d = NumericalProperty('d', ndim=0, domain='negative')
+    e = NumericalProperty('e', ndim=0, domain='strictly-negative')
+    f = NumericalProperty('f', ndim=0, domain=(3, 4))
 
     def test_simple(self):
         self.a = 1.
@@ -73,34 +73,31 @@ class TestScalar(object):
 class TestArray(object):
 
     a = NumericalProperty('a', shape=(3,))
-    b = NumericalProperty('b', domain='positive', shape=(3,))
-    c = NumericalProperty('c', domain='strictly-positive', shape=(3,))
-    d = NumericalProperty('d', domain='negative', shape=(3,))
-    e = NumericalProperty('e', domain='strictly-negative', shape=(3,))
-    f = NumericalProperty('f', domain=(3, 4), shape=(3,))
+    b = NumericalProperty('b', domain='positive', ndim=1)
+    c = NumericalProperty('c', domain='strictly-positive', ndim=1)
+    d = NumericalProperty('d', domain='negative', ndim=1)
+    e = NumericalProperty('e', domain='strictly-negative', ndim=1)
+    f = NumericalProperty('f', domain=(3, 4), ndim=1)
     g = NumericalProperty('g', shape=(3, 4))
 
-    # Two properties that should be set to the same shape
-    h = NumericalProperty('h', shape='i')
-    i = NumericalProperty('i', shape='h')
-
     def test_simple(self):
-        self.a = (1,2,3)
+        self.a = (1, 2, 3)
+        self.b = (1, 2, 3, 4)
 
     def test_shape(self):
         with pytest.raises(ValueError) as exc:
-            self.a = (1,2,3, 4)
+            self.a = (1, 2, 3, 4)
         assert exc.value.args[0] == "a has incorrect length (expected 3 but found 4)"
 
     def test_ndim(self):
         with pytest.raises(TypeError) as exc:
-            self.a = np.ones((3,3))
+            self.a = np.ones((3, 3))
         assert exc.value.args[0] == "a should be a 1-d sequence"
 
     def test_positive(self):
-        self.b = (0.,2.,3.)
+        self.b = (0., 2., 3.)
         with pytest.raises(ValueError) as exc:
-            self.b = (0.,-1., 3.)
+            self.b = (0., -1., 3.)
         assert exc.value.args[0] == "All values of b should be positive"
 
     def test_strictly_positive(self):
@@ -152,9 +149,48 @@ class TestArray(object):
             self.a = [[1.], [1., 2.]]
         assert exc.value.args[0] == "Could not convert value of a to a Numpy array (Exception: setting an array element with a sequence.)"
 
-    def test_copy_shape(self):
-        self.h = np.ones((3,4))
-        self.i = np.ones((3,4))
+
+class TestAstropyUnits(object):
+
+    from astropy import units as u
+
+    a = NumericalProperty('a')
+    b = NumericalProperty('b', convertible_to=u.m)
+    c = NumericalProperty('c', convertible_to=u.cm / u.s)
+
+    # Need to decide on behavior if passing a unit-ed quantity to a property
+    # with no convertible_to argument.
+
+    def test_valid(self):
+
+        from astropy import units as u
+
+        self.b = 3 * u.m
+        self.b = [1, 2, 3] * u.cm
+        self.b = np.ones((2, 2)) * u.pc
+
+        self.c = 3 * u.m / u.yr
+        self.c = [1, 2, 3] * u.cm / u.s
+        self.c = np.ones((2, 2)) * u.pc / u.Myr
+
+    def test_invalid_type(self):
+
+        with pytest.raises(TypeError) as exc:
+            self.b = 5
+        assert exc.value.args[0] == 'b should be given as an Astropy Quantity object'
+
+        with pytest.raises(TypeError) as exc:
+            self.c = np.ones((2, 5))
+        assert exc.value.args[0] == 'c should be given as an Astropy Quantity object'
+
+    def test_invalid_units(self):
+
+        from astropy import units as u
+
         with pytest.raises(ValueError) as exc:
-            self.i = np.ones((4, 5))
-        assert exc.value.args[0] == "i has incorrect shape (expected (3, 4) but found (4, 5))"
+            self.b = 5 * u.s
+        assert exc.value.args[0] == 'b should be in units convertible to m'
+
+        with pytest.raises(ValueError) as exc:
+            self.c = np.ones((2, 5)) * u.s
+        assert exc.value.args[0] == 'c should be in units convertible to cm / s'
