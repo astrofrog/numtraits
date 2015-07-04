@@ -291,6 +291,8 @@ else:
             assert exc.value.args[0] == 'b should be in units convertible to cm/s'
 
 
+# TODO: add test for domain with units
+
 def test_inconsistent_ndim_shape():
 
     with pytest.raises(ValueError) as exc:
