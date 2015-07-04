@@ -15,6 +15,7 @@ class TestScalar(object):
 
     def test_simple(self):
         self.a = 1.
+        assert self.a == 1.
 
     def test_scalar(self):
         with pytest.raises(TypeError) as exc:
@@ -83,6 +84,10 @@ class TestArray(object):
     def test_simple(self):
         self.a = (1, 2, 3)
         self.b = (1, 2, 3, 4)
+        np.testing.assert_allclose(self.a, (1,2,3))
+        np.testing.assert_allclose(self.b, (1,2,3,4))
+        assert isinstance(self.a, np.ndarray)
+        assert isinstance(self.b, np.ndarray)
 
     def test_shape(self):
         with pytest.raises(ValueError) as exc:
@@ -150,47 +155,128 @@ class TestArray(object):
         assert exc.value.args[0] == "Could not convert value of a to a Numpy array (Exception: setting an array element with a sequence.)"
 
 
+# Need to decide on behavior if passing a unit-ed quantity to a property
+# with no convertible_to argument.
+
+from astropy import units as u
+
 class TestAstropyUnits(object):
 
-    from astropy import units as u
 
-    a = NumericalProperty('a')
-    b = NumericalProperty('b', convertible_to=u.m)
-    c = NumericalProperty('c', convertible_to=u.cm / u.s)
+    a = NumericalProperty('a', convertible_to=u.m)
+    b = NumericalProperty('b', convertible_to=u.cm / u.s)
 
-    # Need to decide on behavior if passing a unit-ed quantity to a property
-    # with no convertible_to argument.
+    def test_valid(self):
+
+        self.a = 3 * u.m
+        self.a = [1, 2, 3] * u.cm
+        self.a = np.ones((2, 2)) * u.pc
+
+        self.b = 3 * u.m / u.yr
+        self.b = [1, 2, 3] * u.cm / u.s
+        self.b = np.ones((2, 2)) * u.pc / u.Myr
+
+    def test_invalid_type(self):
+
+        with pytest.raises(TypeError) as exc:
+            self.a = 5
+        assert exc.value.args[0] == 'a should be given as an Astropy Quantity instance'
+
+        with pytest.raises(TypeError) as exc:
+            self.b = np.ones((2, 5))
+        assert exc.value.args[0] == 'b should be given as an Astropy Quantity instance'
+
+    def test_invalid_units(self):
+
+        with pytest.raises(ValueError) as exc:
+            self.a = 5 * u.s
+        assert exc.value.args[0] == 'a should be in units convertible to m'
+
+        with pytest.raises(ValueError) as exc:
+            self.b = np.ones((2, 5)) * u.s
+        assert exc.value.args[0] == 'b should be in units convertible to cm / s'
+
+
+from pint import UnitRegistry
+ureg = UnitRegistry()
+
+class TestPintUnits(object):
+
+    a = NumericalProperty('a', convertible_to=ureg.m)
+    b = NumericalProperty('b', convertible_to=ureg.cm / ureg.s)
 
     def test_valid(self):
 
         from astropy import units as u
 
-        self.b = 3 * u.m
-        self.b = [1, 2, 3] * u.cm
-        self.b = np.ones((2, 2)) * u.pc
+        self.a = 3 * ureg.m
+        self.a = [1, 2, 3] * ureg.cm
+        self.a = np.ones((2, 2)) * ureg.pc
 
-        self.c = 3 * u.m / u.yr
-        self.c = [1, 2, 3] * u.cm / u.s
-        self.c = np.ones((2, 2)) * u.pc / u.Myr
+        self.b = 3 * ureg.m / ureg.year
+        self.b = [1, 2, 3] * ureg.cm / ureg.s
+        self.b = np.ones((2, 2)) * ureg.pc / ureg.megayear
 
     def test_invalid_type(self):
 
         with pytest.raises(TypeError) as exc:
-            self.b = 5
-        assert exc.value.args[0] == 'b should be given as an Astropy Quantity object'
+            self.a = 5
+        assert exc.value.args[0] == 'a should be given as a Pint Quantity instance'
 
         with pytest.raises(TypeError) as exc:
-            self.c = np.ones((2, 5))
-        assert exc.value.args[0] == 'c should be given as an Astropy Quantity object'
+            self.b = np.ones((2, 5))
+        assert exc.value.args[0] == 'b should be given as a Pint Quantity instance'
 
     def test_invalid_units(self):
 
         from astropy import units as u
 
         with pytest.raises(ValueError) as exc:
-            self.b = 5 * u.s
-        assert exc.value.args[0] == 'b should be in units convertible to m'
+            self.a = 5 * ureg.s
+        assert exc.value.args[0] == 'a should be in units convertible to meter'
 
         with pytest.raises(ValueError) as exc:
-            self.c = np.ones((2, 5)) * u.s
-        assert exc.value.args[0] == 'c should be in units convertible to cm / s'
+            self.b = np.ones((2, 5)) * ureg.s
+        assert exc.value.args[0] == 'b should be in units convertible to centimeter / second'
+
+
+import quantities as pq
+
+class TestQuantitiesUnits(object):
+
+    a = NumericalProperty('a', convertible_to=pq.m)
+    b = NumericalProperty('b', convertible_to=pq.cm / pq.s)
+
+    def test_valid(self):
+
+        from astropy import units as u
+
+        self.a = 3 * pq.m
+        self.a = [1, 2, 3] * pq.cm
+        self.a = np.ones((2, 2)) * pq.pc
+
+        self.b = 3 * pq.m / pq.year
+        self.b = [1, 2, 3] * pq.cm / pq.s
+        self.b = np.ones((2, 2)) * pq.pc / pq.s
+
+    def test_invalid_type(self):
+
+        with pytest.raises(TypeError) as exc:
+            self.a = 5
+        assert exc.value.args[0] == 'a should be given as a quantities Quantity instance'
+
+        with pytest.raises(TypeError) as exc:
+            self.b = np.ones((2, 5))
+        assert exc.value.args[0] == 'b should be given as a quantities Quantity instance'
+
+    def test_invalid_units(self):
+
+        from astropy import units as u
+
+        with pytest.raises(ValueError) as exc:
+            self.a = 5 * pq.s
+        assert exc.value.args[0] == 'a should be in units convertible to m'
+
+        with pytest.raises(ValueError) as exc:
+            self.b = np.ones((2, 5)) * pq.s
+        assert exc.value.args[0] == 'b should be in units convertible to cm/s'

@@ -3,10 +3,6 @@ import numpy as np
 from weakref import WeakKeyDictionary
 
 
-def is_scalar(value):
-    return np.isscalar(value) and (not hasattr(value, 'shape') or value.shape != ())
-
-
 class NumericalProperty(object):
 
     def __init__(self, name, ndim=None, shape=None, domain=None,
@@ -34,17 +30,35 @@ class NumericalProperty(object):
         return self.data.get(instance, self.default)
 
     def __set__(self, instance, value):
+        
+        # We proceed by checking whether Numpy tells us the value is a
+        # scalar. If Numpy isscalar returns False, it could still be scalar
+        # but be a Quantity with units, so we then extract the numerical
+        # values
 
-        is_scalar = np.isscalar(value) and (not hasattr(value, 'shape') or value.shape != ())
-
-        if is_scalar:
+        if np.isscalar(value):
             if not np.isreal(value):
                 raise TypeError("{0} should be a numerical value".format(self.name))
+            else:
+                is_scalar = True
+                num_value = value
         else:
+
+            # The following works for Astropy and Pint quantities
             try:
-                value = np.array(value, dtype=float, subok=True)
+                num_value = np.array(value, copy=False, dtype=float)
             except Exception as exc:
                 raise TypeError("Could not convert value of {0} to a Numpy array (Exception: {1})".format(self.name, exc))
+
+            is_scalar = np.isscalar(num_value)
+
+            if not is_scalar:
+                # If value is not scalar, then Pint and Astropy quantities will
+                # have a shape and ndim, so we can then safely set value to the
+                # unitless Numpy array if either shape or ndim are not present.
+                # This will cause e.g. tuples and lists to get converted.
+                if not hasattr(value, 'shape') or not hasattr(value, 'ndim'):
+                    value = num_value
 
         if self.ndim is not None:
 
@@ -53,7 +67,7 @@ class NumericalProperty(object):
                     raise TypeError("{0} should be a scalar value".format(self.name))
 
             if self.ndim > 0:
-                if is_scalar or value.ndim != self.ndim:
+                if is_scalar or num_value.ndim != self.ndim:
                     if self.ndim == 1:
                         raise TypeError("{0} should be a 1-d sequence".format(self.name))
                     else:
@@ -69,11 +83,11 @@ class NumericalProperty(object):
             else:
                 expected_shape = self.shape
 
-            if expected_shape is not None and np.any(value.shape != expected_shape):
+            if expected_shape is not None and np.any(num_value.shape != expected_shape):
                 if self.ndim == 1:
-                    raise ValueError("{0} has incorrect length (expected {1} but found {2})".format(self.name, expected_shape[0], value.shape[0]))
+                    raise ValueError("{0} has incorrect length (expected {1} but found {2})".format(self.name, expected_shape[0], num_value.shape[0]))
                 else:
-                    raise ValueError("{0} has incorrect shape (expected {1} but found {2})".format(self.name, expected_shape, value.shape))
+                    raise ValueError("{0} has incorrect shape (expected {1} but found {2})".format(self.name, expected_shape, num_value.shape))
 
         if self.target_unit is not None:
             _assert_unit_convertability(self.name, value, self.target_unit)
@@ -84,22 +98,23 @@ class NumericalProperty(object):
             prefix = "All values of "
 
         if self.domain == 'positive':
-            if np.any(value < 0.):
+            if np.any(num_value < 0.):
                 raise ValueError(prefix + "{0} should be positive".format(self.name))
         elif self.domain == 'strictly-positive':
-            if np.any(value <= 0.):
+            if np.any(num_value <= 0.):
                 raise ValueError(prefix + "{0} should be strictly positive".format(self.name))
         elif self.domain == 'negative':
-            if np.any(value > 0.):
+            if np.any(num_value > 0.):
                 raise ValueError(prefix + "{0} should be negative".format(self.name))
         elif self.domain == 'strictly-negative':
-            if np.any(value >= 0.):
+            if np.any(num_value >= 0.):
                 raise ValueError(prefix + "{0} should be strictly negative".format(self.name))
         elif type(self.domain) in [tuple, list] and len(self.domain) == 2:
-            if np.any(value < self.domain[0]) or np.any(value > self.domain[-1]):
+            if np.any(num_value < self.domain[0]) or np.any(num_value > self.domain[-1]):
                 raise ValueError(prefix + "{0} should be in the range [{1:g}:{2:g}]".format(self.name, self.domain[0], self.domain[-1]))
 
-        return value
+        self.data[instance] = value
+
 
 try:
     import astropy.units
@@ -109,18 +124,19 @@ else:
     HAS_ASTROPY = True
 
 try:
-    from quantities import Quantity
-except:
-    HAS_QUANTITIES = False
-else:
-    HAS_QUANTITIES = True
-
-try:
-    from pint.unit import UnitsContainer
+    import pint
 except:
     HAS_PINT = False
 else:
     HAS_PINT = True
+
+
+try:
+    import quantities
+except:
+    HAS_QUANTITIES = False
+else:
+    HAS_QUANTITIES = True
 
 
 def _assert_unit_convertability(name, value, target_unit):
@@ -147,11 +163,37 @@ def _assert_unit_convertability(name, value, target_unit):
         if isinstance(target_unit, UnitBase):
 
             if not isinstance(value, Quantity):
-                raise TypeError("{0} should be given as an Astropy Quantity object".format(name))
+                raise TypeError("{0} should be given as an Astropy Quantity instance".format(name))
 
             if not target_unit.is_equivalent(value.unit):
                 raise ValueError("{0} should be in units convertible to {1}".format(name, target_unit))
 
+            return
+
+    if HAS_PINT:
+        
+        from pint.unit import UnitsContainer
+
+        if hasattr(target_unit, 'units') and isinstance(target_unit.units, UnitsContainer):
+
+            if not (hasattr(value, 'units') and isinstance(value.units, UnitsContainer)):
+                raise TypeError("{0} should be given as a Pint Quantity instance".format(name))
+
+            if value.dimensionality != target_unit.dimensionality:
+                raise ValueError("{0} should be in units convertible to {1}".format(name, target_unit.units))
+
     if HAS_QUANTITIES:
 
         from quantities.unitquantity import IrreducibleUnit
+        from quantities import Quantity
+
+        if isinstance(target_unit, IrreducibleUnit) or isinstance(target_unit, Quantity):
+
+            if not isinstance(value, Quantity):
+                raise TypeError("{0} should be given as a quantities Quantity instance".format(name))
+
+            if value.dimensionality.simplified != target_unit.dimensionality.simplified:
+                raise ValueError("{0} should be in units convertible to {1}".format(name, target_unit.dimensionality.string))
+
+        # Since we don't want to convert all values in an array,
+
