@@ -30,7 +30,7 @@ class NumericalProperty(object):
         return self.data.get(instance, self.default)
 
     def __set__(self, instance, value):
-        
+
         # We proceed by checking whether Numpy tells us the value is a
         # scalar. If Numpy isscalar returns False, it could still be scalar
         # but be a Quantity with units, so we then extract the numerical
@@ -163,7 +163,7 @@ def _assert_unit_convertability(name, value, target_unit):
             return
 
     if HAS_PINT:
-        
+
         from pint.unit import UnitsContainer
 
         if hasattr(target_unit, 'units') and isinstance(target_unit.units, UnitsContainer):
@@ -188,4 +188,3 @@ def _assert_unit_convertability(name, value, target_unit):
                 raise ValueError("{0} should be in units convertible to {1}".format(name, target_unit.dimensionality.string))
 
         # Since we don't want to convert all values in an array,
-

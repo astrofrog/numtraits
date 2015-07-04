@@ -84,8 +84,8 @@ class TestArray(object):
     def test_simple(self):
         self.a = (1, 2, 3)
         self.b = (1, 2, 3, 4)
-        np.testing.assert_allclose(self.a, (1,2,3))
-        np.testing.assert_allclose(self.b, (1,2,3,4))
+        np.testing.assert_allclose(self.a, (1, 2, 3))
+        np.testing.assert_allclose(self.b, (1, 2, 3, 4))
         assert isinstance(self.a, np.ndarray)
         assert isinstance(self.b, np.ndarray)
 
@@ -164,7 +164,6 @@ except ImportError:
     pass
 else:
     class TestAstropyUnits(object):
-
 
         a = NumericalProperty('a', convertible_to=u.m)
         b = NumericalProperty('b', convertible_to=u.cm / u.s)
@@ -295,5 +294,5 @@ else:
 def test_inconsistent_ndim_shape():
 
     with pytest.raises(ValueError) as exc:
-        a = NumericalProperty('a', ndim=3, shape=(3,3))
+        a = NumericalProperty('a', ndim=3, shape=(3, 3))
     assert exc.value.args[0] == "shape=(3, 3) and ndim=3 for property 'a' are inconsistent"
