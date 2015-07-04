@@ -2,10 +2,13 @@ language: c
 
 env:
   matrix:
-    - PYTHON_VERSION=2.6
-    - PYTHON_VERSION=2.7
-    - PYTHON_VERSION=3.3
-    - PYTHON_VERSION=3.4
+    - PYTHON_VERSION=2.6 UNITPKG=false
+    - PYTHON_VERSION=2.7 UNITPKG=false
+    - PYTHON_VERSION=3.3 UNITPKG=false
+    - PYTHON_VERSION=3.4 UNITPKG=false
+    - PYTHON_VERSION=2.7 UNITPKG=true
+    - PYTHON_VERSION=3.3 UNITPKG=true
+    - PYTHON_VERSION=3.4 UNITPKG=true
 
 before_install:
     - source .continuous-integration/travis/setup_environment_$TRAVIS_OS_NAME.sh
@@ -13,11 +16,17 @@ before_install:
     - source activate test
 
 install:
-    - conda install --yes pip pytest numpy astropy
-    - pip install coveralls pytest-cov quantities pint
+    - conda install --yes pip pytest numpy
+    - pip install coveralls pytest-cov
+    - if [ $UNITPKG ] then;
+        conda install --yes astropy;
+        pip install quantities pint;
+      fi
+
+
 
 script:
     - py.test --cov .
-    
+
 after_success:
   - coveralls

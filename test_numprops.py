@@ -158,128 +158,138 @@ class TestArray(object):
 # Need to decide on behavior if passing a unit-ed quantity to a property
 # with no convertible_to argument.
 
-from astropy import units as u
-
-class TestAstropyUnits(object):
-
-
-    a = NumericalProperty('a', convertible_to=u.m)
-    b = NumericalProperty('b', convertible_to=u.cm / u.s)
-
-    def test_valid(self):
-
-        self.a = 3 * u.m
-        self.a = [1, 2, 3] * u.cm
-        self.a = np.ones((2, 2)) * u.pc
-
-        self.b = 3 * u.m / u.yr
-        self.b = [1, 2, 3] * u.cm / u.s
-        self.b = np.ones((2, 2)) * u.pc / u.Myr
-
-    def test_invalid_type(self):
-
-        with pytest.raises(TypeError) as exc:
-            self.a = 5
-        assert exc.value.args[0] == 'a should be given as an Astropy Quantity instance'
-
-        with pytest.raises(TypeError) as exc:
-            self.b = np.ones((2, 5))
-        assert exc.value.args[0] == 'b should be given as an Astropy Quantity instance'
-
-    def test_invalid_units(self):
-
-        with pytest.raises(ValueError) as exc:
-            self.a = 5 * u.s
-        assert exc.value.args[0] == 'a should be in units convertible to m'
-
-        with pytest.raises(ValueError) as exc:
-            self.b = np.ones((2, 5)) * u.s
-        assert exc.value.args[0] == 'b should be in units convertible to cm / s'
+try:
+    from astropy import units as u
+except ImportError:
+    pass
+else:
+    class TestAstropyUnits(object):
 
 
-from pint import UnitRegistry
-ureg = UnitRegistry()
+        a = NumericalProperty('a', convertible_to=u.m)
+        b = NumericalProperty('b', convertible_to=u.cm / u.s)
 
-class TestPintUnits(object):
+        def test_valid(self):
 
-    a = NumericalProperty('a', convertible_to=ureg.m)
-    b = NumericalProperty('b', convertible_to=ureg.cm / ureg.s)
+            self.a = 3 * u.m
+            self.a = [1, 2, 3] * u.cm
+            self.a = np.ones((2, 2)) * u.pc
 
-    def test_valid(self):
+            self.b = 3 * u.m / u.yr
+            self.b = [1, 2, 3] * u.cm / u.s
+            self.b = np.ones((2, 2)) * u.pc / u.Myr
 
-        from astropy import units as u
+        def test_invalid_type(self):
 
-        self.a = 3 * ureg.m
-        self.a = [1, 2, 3] * ureg.cm
-        self.a = np.ones((2, 2)) * ureg.pc
+            with pytest.raises(TypeError) as exc:
+                self.a = 5
+            assert exc.value.args[0] == 'a should be given as an Astropy Quantity instance'
 
-        self.b = 3 * ureg.m / ureg.year
-        self.b = [1, 2, 3] * ureg.cm / ureg.s
-        self.b = np.ones((2, 2)) * ureg.pc / ureg.megayear
+            with pytest.raises(TypeError) as exc:
+                self.b = np.ones((2, 5))
+            assert exc.value.args[0] == 'b should be given as an Astropy Quantity instance'
 
-    def test_invalid_type(self):
+        def test_invalid_units(self):
 
-        with pytest.raises(TypeError) as exc:
-            self.a = 5
-        assert exc.value.args[0] == 'a should be given as a Pint Quantity instance'
+            with pytest.raises(ValueError) as exc:
+                self.a = 5 * u.s
+            assert exc.value.args[0] == 'a should be in units convertible to m'
 
-        with pytest.raises(TypeError) as exc:
-            self.b = np.ones((2, 5))
-        assert exc.value.args[0] == 'b should be given as a Pint Quantity instance'
-
-    def test_invalid_units(self):
-
-        from astropy import units as u
-
-        with pytest.raises(ValueError) as exc:
-            self.a = 5 * ureg.s
-        assert exc.value.args[0] == 'a should be in units convertible to meter'
-
-        with pytest.raises(ValueError) as exc:
-            self.b = np.ones((2, 5)) * ureg.s
-        assert exc.value.args[0] == 'b should be in units convertible to centimeter / second'
+            with pytest.raises(ValueError) as exc:
+                self.b = np.ones((2, 5)) * u.s
+            assert exc.value.args[0] == 'b should be in units convertible to cm / s'
 
 
-import quantities as pq
+try:
+    from pint import UnitRegistry
+except ImportError:
+    pass
+else:
+    ureg = UnitRegistry()
 
-class TestQuantitiesUnits(object):
+    class TestPintUnits(object):
 
-    a = NumericalProperty('a', convertible_to=pq.m)
-    b = NumericalProperty('b', convertible_to=pq.cm / pq.s)
+        a = NumericalProperty('a', convertible_to=ureg.m)
+        b = NumericalProperty('b', convertible_to=ureg.cm / ureg.s)
 
-    def test_valid(self):
+        def test_valid(self):
 
-        from astropy import units as u
+            from astropy import units as u
 
-        self.a = 3 * pq.m
-        self.a = [1, 2, 3] * pq.cm
-        self.a = np.ones((2, 2)) * pq.pc
+            self.a = 3 * ureg.m
+            self.a = [1, 2, 3] * ureg.cm
+            self.a = np.ones((2, 2)) * ureg.pc
 
-        self.b = 3 * pq.m / pq.year
-        self.b = [1, 2, 3] * pq.cm / pq.s
-        self.b = np.ones((2, 2)) * pq.pc / pq.s
+            self.b = 3 * ureg.m / ureg.year
+            self.b = [1, 2, 3] * ureg.cm / ureg.s
+            self.b = np.ones((2, 2)) * ureg.pc / ureg.megayear
 
-    def test_invalid_type(self):
+        def test_invalid_type(self):
 
-        with pytest.raises(TypeError) as exc:
-            self.a = 5
-        assert exc.value.args[0] == 'a should be given as a quantities Quantity instance'
+            with pytest.raises(TypeError) as exc:
+                self.a = 5
+            assert exc.value.args[0] == 'a should be given as a Pint Quantity instance'
 
-        with pytest.raises(TypeError) as exc:
-            self.b = np.ones((2, 5))
-        assert exc.value.args[0] == 'b should be given as a quantities Quantity instance'
+            with pytest.raises(TypeError) as exc:
+                self.b = np.ones((2, 5))
+            assert exc.value.args[0] == 'b should be given as a Pint Quantity instance'
 
-    def test_invalid_units(self):
+        def test_invalid_units(self):
 
-        from astropy import units as u
+            from astropy import units as u
 
-        with pytest.raises(ValueError) as exc:
-            self.a = 5 * pq.s
-        assert exc.value.args[0] == 'a should be in units convertible to m'
+            with pytest.raises(ValueError) as exc:
+                self.a = 5 * ureg.s
+            assert exc.value.args[0] == 'a should be in units convertible to meter'
 
-        with pytest.raises(ValueError) as exc:
-            self.b = np.ones((2, 5)) * pq.s
-        assert exc.value.args[0] == 'b should be in units convertible to cm/s'
+            with pytest.raises(ValueError) as exc:
+                self.b = np.ones((2, 5)) * ureg.s
+            assert exc.value.args[0] == 'b should be in units convertible to centimeter / second'
+
+
+try:
+    import quantities as pq
+except ImportError:
+    pass
+else:
+    class TestQuantitiesUnits(object):
+
+        a = NumericalProperty('a', convertible_to=pq.m)
+        b = NumericalProperty('b', convertible_to=pq.cm / pq.s)
+
+        def test_valid(self):
+
+            from astropy import units as u
+
+            self.a = 3 * pq.m
+            self.a = [1, 2, 3] * pq.cm
+            self.a = np.ones((2, 2)) * pq.pc
+
+            self.b = 3 * pq.m / pq.year
+            self.b = [1, 2, 3] * pq.cm / pq.s
+            self.b = np.ones((2, 2)) * pq.pc / pq.s
+
+        def test_invalid_type(self):
+
+            with pytest.raises(TypeError) as exc:
+                self.a = 5
+            assert exc.value.args[0] == 'a should be given as a quantities Quantity instance'
+
+            with pytest.raises(TypeError) as exc:
+                self.b = np.ones((2, 5))
+            assert exc.value.args[0] == 'b should be given as a quantities Quantity instance'
+
+        def test_invalid_units(self):
+
+            from astropy import units as u
+
+            with pytest.raises(ValueError) as exc:
+                self.a = 5 * pq.s
+            assert exc.value.args[0] == 'a should be in units convertible to m'
+
+            with pytest.raises(ValueError) as exc:
+                self.b = np.ones((2, 5)) * pq.s
+            assert exc.value.args[0] == 'b should be in units convertible to cm/s'
 
 
 def test_inconsistent_ndim_shape():
