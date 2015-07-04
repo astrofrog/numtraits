@@ -15,7 +15,7 @@ from numprops import NumericalProperty
 
 class Source(object):
 
-    radius = NumericalProperty('radius', domain='strictly-positive')
+    radius = NumericalProperty('radius', domain='strictly-positive', ndim=0)
     position = NumericalProperty('position', shape=(3,))
 ```
         
