@@ -18,5 +18,6 @@ setup(
     py_modules=['numprops'],
     license='BSD',
     author='Thomas Robitaille',
-    author_email='thomas.robitaille@gmail.com'
+    author_email='thomas.robitaille@gmail.com',
+    install_requires=['numpy']
 )
