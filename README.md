@@ -68,6 +68,9 @@ license for the file.
 Using
 -----
 
+To create self-validating numerical properties on a class, use the
+``NumericalProperty`` class:
+
 ```python
 from numprops import NumericalProperty
 
