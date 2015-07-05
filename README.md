@@ -10,7 +10,65 @@ About
 
 This simple module defines a descriptor class that can be used to define
 numerical properties (scalar and n-dimensional arrays) on classes and provide a
-way to validate these:
+way to validate these. Thus, instead of writing something like:
+
+```python
+class Sphere(object):
+
+    @property
+    def radius(self):
+        return self._radius
+        
+    @radius.setter
+    def radius(self, value):
+        if value <= 0:
+            raise ValueError("Value should be strictly positive")
+        if not np.isscalar(value):
+            raise TypeError("Value should be a scalar")
+        if not np.isreal(value):
+            raise TypeError("Value should be numerical")
+        self._value = value
+```
+
+for each property you want to define, you can simply do:
+
+```python
+from numprops import NumericalProperty
+
+class Sphere(object):
+
+    radius = NumericalProperty('radius', domain='strictly-positive', ndim=0)
+```
+
+Support is also included for checking the dimensionality and shape of arrays
+(which includes converting tuples and lists to arrays on-the-fly), as well as
+checking the units of quantities for the
+[astropy.units](docs.astropy.org/en/stable/units/),
+[pint](http://pint.readthedocs.org/), and
+[quantities](https://pythonhosted.org/quantities/) unit frameworks.
+
+Installing
+----------
+
+This package is compatible with Python 2.6, 2.7, and 3.3 and later, and
+requires [numpy](http://www.numpy.org).
+
+Optionally, if you are interested in doing unit validation, you will also need
+[astropy](docs.astropy.org/en/stable/units/),
+[pint](http://pint.readthedocs.org/), or
+[quantities](https://pythonhosted.org/quantities/), depending on which unit
+framework you normally use.
+
+To install, you can do:
+
+    pip install numprops
+
+You can also bundle ``numprops.py`` into your package if you want to avoid
+using an external dependency, but please be sure to keep the copyright and the
+license for the file.
+
+Using
+-----
 
 ```python
 from numprops import NumericalProperty
