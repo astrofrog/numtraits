@@ -27,7 +27,7 @@ class Sphere(object):
             raise TypeError("Value should be a scalar")
         if not np.isreal(value):
             raise TypeError("Value should be numerical")
-        self._value = value
+        self._radius = value
 ```
 
 for each property you want to define, you can simply do:
