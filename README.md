@@ -47,6 +47,8 @@ The following arguments to ``NumericalProperty`` are available (in addition to t
 * ``default``: the default value to return, if not specified (defaults to ``None``)
 * ``convertible_to``: restrict the values to ones with units that would be convertible to a specific set of units (see section below)
 
+Note that tuples and lists will automatically get converted to Numpy arrays, if they are considered valid.
+
 Physical units
 --------------
 
