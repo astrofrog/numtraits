@@ -197,7 +197,7 @@ def identify_unit_framework(target_unit):
 
             return QUANTITIES
 
-    raise ValueError("Could not identify unit framework for target unit of type {0}".format(type(target_unit)))
+    raise ValueError("Could not identify unit framework for target unit of type {0}".format(type(target_unit).__name__))
 
 
 

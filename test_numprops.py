@@ -333,4 +333,4 @@ def test_invalid_unit_framework():
 
     with pytest.raises(ValueError) as exc:
         a = NumericalProperty('a', convertible_to='m')
-    assert exc.value.args[0] == "Could not identify unit framework for target unit of type <class 'str'>"
+    assert exc.value.args[0] == "Could not identify unit framework for target unit of type str"
