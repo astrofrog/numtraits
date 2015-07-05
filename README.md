@@ -63,7 +63,7 @@ To install, you can do:
 
 You can also bundle ``numprops.py`` into your package if you want to avoid
 using an external dependency, but please be sure to keep the copyright and the
-license for the file.
+license in the file.
 
 Using
 -----
