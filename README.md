@@ -163,7 +163,7 @@ ValueError: radius should be in units convertible to m
 ### pint Quantity example
 
 The following example shows how to restrict the ``radius`` property to be a
-[pint](http://pint.readthedocs.org/) quantity in units of speed:
+[pint](http://pint.readthedocs.org/) quantity in units of length:
 
 ```python
 from pint import UnitRegistry
