@@ -160,9 +160,14 @@ class TestArray(object):
 
 try:
     from astropy import units as u
+    from pint import UnitRegistry
+    import quantities as pq
 except ImportError:
     pass
 else:
+
+    ureg = UnitRegistry()
+
     class TestAstropyUnits(object):
 
         a = NumericalProperty('a', convertible_to=u.m)
@@ -188,6 +193,18 @@ else:
                 self.b = np.ones((2, 5))
             assert exc.value.args[0] == 'b should be given as an Astropy Quantity instance'
 
+        def test_invalid_framework(self):
+
+            # pint
+            with pytest.raises(TypeError) as exc:
+                self.a = 5 * ureg.m
+            assert exc.value.args[0] == 'a should be given as an Astropy Quantity instance'
+
+            # quantities
+            with pytest.raises(TypeError) as exc:
+                self.b = 3 * pq.cm
+            assert exc.value.args[0] == 'b should be given as an Astropy Quantity instance'
+
         def test_invalid_units(self):
 
             with pytest.raises(ValueError) as exc:
@@ -198,13 +215,6 @@ else:
                 self.b = np.ones((2, 5)) * u.s
             assert exc.value.args[0] == 'b should be in units convertible to cm / s'
 
-
-try:
-    from pint import UnitRegistry
-except ImportError:
-    pass
-else:
-    ureg = UnitRegistry()
 
     class TestPintUnits(object):
 
@@ -233,6 +243,18 @@ else:
                 self.b = np.ones((2, 5))
             assert exc.value.args[0] == 'b should be given as a Pint Quantity instance'
 
+        def test_invalid_framework(self):
+
+            # astropy.units
+            with pytest.raises(TypeError) as exc:
+                self.b = 5 * u.m
+            assert exc.value.args[0] == 'b should be given as a Pint Quantity instance'
+
+            # quantitites
+            with pytest.raises(TypeError) as exc:
+                self.b = 3 * pq.cm
+            assert exc.value.args[0] == 'b should be given as a Pint Quantity instance'
+
         def test_invalid_units(self):
 
             from astropy import units as u
@@ -246,11 +268,6 @@ else:
             assert exc.value.args[0] == 'b should be in units convertible to centimeter / second'
 
 
-try:
-    import quantities as pq
-except ImportError:
-    pass
-else:
     class TestQuantitiesUnits(object):
 
         a = NumericalProperty('a', convertible_to=pq.m)
@@ -276,6 +293,18 @@ else:
 
             with pytest.raises(TypeError) as exc:
                 self.b = np.ones((2, 5))
+            assert exc.value.args[0] == 'b should be given as a quantities Quantity instance'
+
+        def test_invalid_framework(self):
+
+            # astropy.units
+            with pytest.raises(TypeError) as exc:
+                self.a = 5 * u.m
+            assert exc.value.args[0] == 'a should be given as a quantities Quantity instance'
+
+            # pint
+            with pytest.raises(TypeError) as exc:
+                self.b = 3 * ureg.cm
             assert exc.value.args[0] == 'b should be given as a quantities Quantity instance'
 
         def test_invalid_units(self):
