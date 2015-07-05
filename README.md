@@ -3,6 +3,8 @@ Numerical properties for Python objects
 
 [![Travis Build Status](https://travis-ci.org/astrofrog/numprops.svg?branch=master)](https://travis-ci.org/astrofrog/numprops) [![Coverage Status](https://coveralls.io/repos/astrofrog/numprops/badge.svg)](https://coveralls.io/r/astrofrog/numprops)
 
+**Please note:** this package is experimental and may still see some changes to the API. If you have any suggestions for improving the API, please open an issue!
+
 About
 -----
 
