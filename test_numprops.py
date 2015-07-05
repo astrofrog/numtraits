@@ -327,3 +327,10 @@ def test_inconsistent_ndim_shape():
     with pytest.raises(ValueError) as exc:
         a = NumericalProperty('a', ndim=3, shape=(3, 3))
     assert exc.value.args[0] == "shape=(3, 3) and ndim=3 for property 'a' are inconsistent"
+
+
+def test_invalid_unit_framework():
+
+    with pytest.raises(ValueError) as exc:
+        a = NumericalProperty('a', convertible_to='m')
+    assert exc.value.args[0] == "Could not identify unit framework for target unit of type <class 'str'>"
