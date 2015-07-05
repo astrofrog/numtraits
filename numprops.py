@@ -29,7 +29,7 @@ import numpy as np
 
 from weakref import WeakKeyDictionary
 
-__version__ = '0.1'
+__version__ = '0.2.dev'
 
 ASTROPY = 'astropy'
 PINT = 'pint'
