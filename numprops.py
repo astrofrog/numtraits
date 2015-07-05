@@ -30,6 +30,11 @@ import numpy as np
 from weakref import WeakKeyDictionary
 
 
+ASTROPY = 'astropy'
+PINT = 'pint'
+QUANTITIES = 'quantities'
+
+
 class NumericalProperty(object):
 
     def __init__(self, name, ndim=None, shape=None, domain=None,
@@ -52,6 +57,9 @@ class NumericalProperty(object):
         self.target_unit = convertible_to
 
         self.data = WeakKeyDictionary()
+
+        if convertible_to is not None:
+            self.unit_framework = identify_unit_framework(convertible_to)
 
     def __get__(self, instance, owner):
         return self.data.get(instance, self.default)
@@ -109,7 +117,7 @@ class NumericalProperty(object):
                     raise ValueError("{0} has incorrect shape (expected {1} but found {2})".format(self.name, self.shape, num_value.shape))
 
         if self.target_unit is not None:
-            _assert_unit_convertability(self.name, value, self.target_unit)
+            assert_unit_convertability(self.name, value, self.target_unit, self.unit_framework)
 
         if is_scalar:
             prefix = ""
@@ -158,7 +166,42 @@ else:
     HAS_QUANTITIES = True
 
 
-def _assert_unit_convertability(name, value, target_unit):
+def identify_unit_framework(target_unit):
+    """
+    Identify whether the user is requesting unit validation against
+    astropy.units, pint, or quantities.
+    """
+
+    if HAS_ASTROPY:
+
+        from astropy.units import UnitBase
+
+        if isinstance(target_unit, UnitBase):
+
+            return ASTROPY
+
+    if HAS_PINT:
+
+        from pint.unit import UnitsContainer
+
+        if hasattr(target_unit, 'units') and isinstance(target_unit.units, UnitsContainer):
+
+            return PINT
+
+    if HAS_QUANTITIES:
+
+        from quantities.unitquantity import IrreducibleUnit
+        from quantities import Quantity
+
+        if isinstance(target_unit, IrreducibleUnit) or isinstance(target_unit, Quantity):
+
+            return QUANTITIES
+
+    raise ValueError("Could not identify unit framework for target unit of type {0}".format(type(target_unit).__name__))
+
+
+
+def assert_unit_convertability(name, value, target_unit, unit_framework):
     """
     Check that a value has physical type consistent with user-specified units
 
@@ -173,47 +216,36 @@ def _assert_unit_convertability(name, value, target_unit):
         The value to check.
     target_unit : unit
         The unit that the value should be convertible to.
+    unit_framework : str
+        The unit framework to use
     """
 
-    if HAS_ASTROPY:
+    if unit_framework == ASTROPY:
 
-        from astropy.units import UnitBase, Quantity
+        from astropy.units import Quantity
 
-        if isinstance(target_unit, UnitBase):
+        if not isinstance(value, Quantity):
+            raise TypeError("{0} should be given as an Astropy Quantity instance".format(name))
 
-            if not isinstance(value, Quantity):
-                raise TypeError("{0} should be given as an Astropy Quantity instance".format(name))
+        if not target_unit.is_equivalent(value.unit):
+            raise ValueError("{0} should be in units convertible to {1}".format(name, target_unit))
 
-            if not target_unit.is_equivalent(value.unit):
-                raise ValueError("{0} should be in units convertible to {1}".format(name, target_unit))
-
-            return
-
-    if HAS_PINT:
+    elif unit_framework == PINT:
 
         from pint.unit import UnitsContainer
 
-        if hasattr(target_unit, 'units') and isinstance(target_unit.units, UnitsContainer):
+        if not (hasattr(value, 'units') and isinstance(value.units, UnitsContainer)):
+            raise TypeError("{0} should be given as a Pint Quantity instance".format(name))
 
-            if not (hasattr(value, 'units') and isinstance(value.units, UnitsContainer)):
-                raise TypeError("{0} should be given as a Pint Quantity instance".format(name))
+        if value.dimensionality != target_unit.dimensionality:
+            raise ValueError("{0} should be in units convertible to {1}".format(name, target_unit.units))
 
-            if value.dimensionality != target_unit.dimensionality:
-                raise ValueError("{0} should be in units convertible to {1}".format(name, target_unit.units))
+    elif unit_framework == QUANTITIES:
 
-            return
-
-    if HAS_QUANTITIES:
-
-        from quantities.unitquantity import IrreducibleUnit
         from quantities import Quantity
 
-        if isinstance(target_unit, IrreducibleUnit) or isinstance(target_unit, Quantity):
+        if not isinstance(value, Quantity):
+            raise TypeError("{0} should be given as a quantities Quantity instance".format(name))
 
-            if not isinstance(value, Quantity):
-                raise TypeError("{0} should be given as a quantities Quantity instance".format(name))
-
-            if value.dimensionality.simplified != target_unit.dimensionality.simplified:
-                raise ValueError("{0} should be in units convertible to {1}".format(name, target_unit.dimensionality.string))
-
-            return
+        if value.dimensionality.simplified != target_unit.dimensionality.simplified:
+            raise ValueError("{0} should be in units convertible to {1}".format(name, target_unit.dimensionality.string))
