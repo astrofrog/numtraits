@@ -51,9 +51,7 @@ Installing
 ----------
 
 This package is compatible with Python 2.6, 2.7, and 3.3 and later, and
-requires [numpy](http://www.numpy.org).
-
-Optionally, if you are interested in doing unit validation, you will also need
+requires [numpy](http://www.numpy.org). If you are interested in doing unit validation, you will also need
 [astropy](docs.astropy.org/en/stable/units/),
 [pint](http://pint.readthedocs.org/), or
 [quantities](https://pythonhosted.org/quantities/), depending on which unit
