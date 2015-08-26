@@ -1,6 +1,6 @@
 from setuptools import setup
 
-from numprops import __version__
+from numprops_traitlets import __version__
 
 try:
     import pypandoc
@@ -15,7 +15,7 @@ setup(
     name="numprops",
     description='Numerical properties for Python objects',
     long_description=long_description,
-    py_modules=['numprops'],
+    py_modules=['numprops_traitlets'],
     license='BSD',
     author='Thomas Robitaille',
     author_email='thomas.robitaille@gmail.com',
