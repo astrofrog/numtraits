@@ -2,11 +2,9 @@ language: c
 
 env:
   matrix:
-    - PYTHON_VERSION=2.6 UNITPKG=false
     - PYTHON_VERSION=2.7 UNITPKG=false
     - PYTHON_VERSION=3.3 UNITPKG=false
     - PYTHON_VERSION=3.4 UNITPKG=false
-    - PYTHON_VERSION=2.6 UNITPKG=true
     - PYTHON_VERSION=2.7 UNITPKG=true
     - PYTHON_VERSION=3.3 UNITPKG=true
     - PYTHON_VERSION=3.4 UNITPKG=true
