@@ -66,10 +66,6 @@ class NumericalProperty(TraitType):
 
     def validate(self, obj, value):
 
-        # First validate the construction arguments.
-        self._check_args()
-
-        # Next, let's validate the value for the property.
         # We proceed by checking whether Numpy tells us the value is a
         # scalar. If Numpy isscalar returns False, it could still be scalar
         # but be a Quantity with units, so we then extract the numerical
