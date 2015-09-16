@@ -34,8 +34,9 @@ for each property you want to define, you can simply do:
 
 ```python
 from numprops import NumericalProperty
+from traitlets import HasTraits
 
-class Sphere(object):
+class Sphere(HasTraits):
 
     radius = NumericalProperty(domain='strictly-positive', ndim=0)
 ```
