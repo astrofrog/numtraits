@@ -18,7 +18,7 @@ class Sphere(object):
     @property
     def radius(self):
         return self._radius
-        
+
     @radius.setter
     def radius(self, value):
         if value <= 0:
@@ -37,7 +37,7 @@ from numprops import NumericalProperty
 
 class Sphere(object):
 
-    radius = NumericalProperty('radius', domain='strictly-positive', ndim=0)
+    radius = NumericalProperty(domain='strictly-positive', ndim=0)
 ```
 
 Support is also included for checking the dimensionality and shape of arrays
@@ -51,7 +51,8 @@ Installing
 ----------
 
 This package is compatible with Python 2.6, 2.7, and 3.3 and later, and
-requires [numpy](http://www.numpy.org). If you are interested in doing unit validation, you will also need
+requires [numpy](http://www.numpy.org) and [traitlets](https://github.com/ipython/traitlets).
+If you are interested in doing unit validation, you will also need
 [astropy](docs.astropy.org/en/stable/units/),
 [pint](http://pint.readthedocs.org/), or
 [quantities](https://pythonhosted.org/quantities/), depending on which unit
@@ -72,14 +73,15 @@ To create self-validating numerical properties on a class, use the
 ``NumericalProperty`` class:
 
 ```python
+from traitlets import HasTraits
 from numprops import NumericalProperty
 
-class Sphere(object):
+class Sphere(HasTraits):
 
-    radius = NumericalProperty('radius', domain='strictly-positive', ndim=0)
-    position = NumericalProperty('position', shape=(3,))
+    radius = NumericalProperty(domain='strictly-positive', ndim=0)
+    position = NumericalProperty(shape=(3,))
 ```
-        
+
 When a property is set, it will be validated:
 
 ```python
@@ -87,20 +89,20 @@ When a property is set, it will be validated:
 >>> s.radius = 1.
 >>> s.radius = -3
 ...
-ValueError: radius should be strictly positive
+TraitError: radius should be strictly positive
 >>> s.radius = [1,2]
 ...
-TypeError: radius should be a scalar value
+TraitError: radius should be a scalar value
 >>> s.position = (1,2,3)
 >>> s.position = 3
 ...
-TypeError: position should be a 1-d sequence
+TraitError: position should be a 1-d sequence
 >>> s.position = (1,2,3,4)
 ...
-ValueError: position has incorrect length (expected 3 but found 4)
+TraitError: position has incorrect length (expected 3 but found 4)
 ```
 
-The following arguments to ``NumericalProperty`` are available (in addition to the property name):
+The following arguments to ``NumericalProperty`` are available:
 
 * ``ndim``: restrict the values to arrays with this number of dimension
 * ``shape``: restrict the values to arrays with this shape. If specified, ``ndim`` does not need to be given.
@@ -145,8 +147,8 @@ The following example shows how to restrict the ``radius`` property to be an
 ```python
 from astropy import units as u
 
-class Sphere(object):
-    radius = NumericalProperty('radius', convertible_to=u.m)
+class Sphere(HasTraits):
+    radius = NumericalProperty(convertible_to=u.m)
 ```
 
 will then behave as follows:
@@ -157,7 +159,7 @@ will then behave as follows:
 >>> s.radius = 4. * u.cm
 >>> s.radius = 4. * u.s
 ...
-ValueError: radius should be in units convertible to m
+TraitError: radius should be in units convertible to m
 ```
 
 ### pint Quantity example
@@ -169,8 +171,8 @@ The following example shows how to restrict the ``radius`` property to be a
 from pint import UnitRegistry
 ureg = UnitRegistry()
 
-class Sphere(object):
-    radius = NumericalProperty('radius', convertible_to=ureg.m)
+class Sphere(HasTraits):
+    radius = NumericalProperty(convertible_to=ureg.m)
 ```
 
 will then behave as follows:
@@ -181,7 +183,7 @@ will then behave as follows:
 >>> s.radius = 4. * ureg.cm
 >>> s.radius = 4. * ureg.s
 ...
-ValueError: radius should be in units convertible to meter
+TraitError: radius should be in units convertible to meter
 ```
 
 ### quantities Quantity example
@@ -192,8 +194,8 @@ be a [quantities](https://pythonhosted.org/quantities/) quantity in units of len
 ```python
 import quantities as pq
 
-class Sphere(object):
-    radius = NumericalProperty('radius', convertible_to=pq.m)
+class Sphere(HasTraits):
+    radius = NumericalProperty(convertible_to=pq.m)
 ```
 
 will then behave as follows:
@@ -204,7 +206,7 @@ will then behave as follows:
 >>> s.radius = 4. * pq.cm
 >>> s.radius = 4. * pq.s
 ...
-ValueError: radius should be in units convertible to m
+TraitError: radius should be in units convertible to m
 ```
 
 Planned support

@@ -45,6 +45,8 @@ class NumericalProperty(TraitType):
         self.ndim = ndim
         self.shape = shape
         self.domain = domain
+        # TODO: traitlets supports a `default` argument in __init__(), we should
+        # probably link them together once we start using this.
         self.default = default
         self.target_unit = convertible_to
 
