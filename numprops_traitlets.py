@@ -48,10 +48,11 @@ class NumericalProperty(TraitType):
         self.default = default
         self.target_unit = convertible_to
 
-        #self.data = WeakKeyDictionary()
-
         if self.target_unit is not None:
             self.unit_framework = identify_unit_framework(self.target_unit)
+
+        # Check the construction arguments.
+        self._check_args()
 
     def _check_args(self):
         if self.shape is not None:
@@ -59,7 +60,7 @@ class NumericalProperty(TraitType):
                 self.ndim = len(self.shape)
             else:
                 if self.ndim != len(self.shape):
-                    raise TraitError("shape={0} and ndim={1} for property '{2}' are inconsistent".format(self.shape, self.ndim, self.name))
+                    raise TraitError("shape={0} and ndim={1} are inconsistent".format(self.shape, self.ndim))
 
     def validate(self, obj, value):
 
