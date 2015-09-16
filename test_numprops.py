@@ -1,7 +1,7 @@
 import pytest
 
 import numpy as np
-from numprops_traitlets import NumericalProperty
+from numprops import NumericalProperty
 
 from traitlets import HasTraits, TraitError
 

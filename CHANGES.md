@@ -1,3 +1,8 @@
+0.3 (unreleased)
+----------------
+
+- Implement on top of the traitlets module.
+
 0.2 (unreleased)
 ----------------
 
