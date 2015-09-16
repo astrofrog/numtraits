@@ -329,11 +329,11 @@ else:
 
 # TODO: add test for domain with units
 
-#def test_inconsistent_ndim_shape():
+def test_inconsistent_ndim_shape():
 
-    #with pytest.raises(ValueError) as exc:
-        #a = NumericalProperty(ndim=3, shape=(3, 3))
-    #assert exc.value.args[0] == "shape=(3, 3) and ndim=3 for property 'a' are inconsistent"
+    with pytest.raises(TraitError) as exc:
+        a = NumericalProperty(ndim=3, shape=(3, 3))
+    assert exc.value.args[0] == "shape=(3, 3) and ndim=3 are inconsistent"
 
 
 def test_invalid_unit_framework():
