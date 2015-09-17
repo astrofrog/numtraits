@@ -157,7 +157,7 @@ class TestArray(HasTraits):
 
 class_list = [TestScalar,TestArray]
 
-# Need to decide on behavior if passing a unit-ed quantity to a property
+# Need to decide on behavior if passing a unit-ed quantity to a trait
 # with no convertible_to argument.
 
 try:

@@ -41,6 +41,9 @@ class Sphere(HasTraits):
     radius = NumericalTrait(domain='strictly-positive', ndim=0)
 ```
 
+The ``NumericalTrait`` class is implemented on top of the [traitlets](https://github.com/ipython/traitlets)
+module.
+
 Support is also included for checking the dimensionality and shape of arrays
 (which includes converting tuples and lists to arrays on-the-fly), as well as
 checking the units of quantities for the
