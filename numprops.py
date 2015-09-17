@@ -29,17 +29,17 @@ from traitlets import TraitType, TraitError
 
 import numpy as np
 
-__version__ = '0.3.dev0'
+__version__ = '0.2.dev0'
 
 ASTROPY = 'astropy'
 PINT = 'pint'
 QUANTITIES = 'quantities'
 
-class NumericalProperty(TraitType):
-    info_text = 'a numerical property, either a scalar or a vector'
+class NumericalTrait(TraitType):
+    info_text = 'a numerical trait, either a scalar or a vector'
     def __init__(self, ndim=None, shape=None, domain=None,
                  default=None, convertible_to=None):
-        super(NumericalProperty, self).__init__()
+        super(NumericalTrait, self).__init__()
 
         # Just store all the construction arguments.
         self.ndim = ndim

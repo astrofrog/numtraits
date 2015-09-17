@@ -13,7 +13,7 @@ setup(
     version=__version__,
     url="https://github.com/astrofrog/numprops",
     name="numprops",
-    description='Numerical properties for Python objects',
+    description='Numerical traits for Python objects',
     long_description=long_description,
     py_modules=['numprops'],
     license='BSD',

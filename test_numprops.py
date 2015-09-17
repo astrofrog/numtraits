@@ -1,18 +1,18 @@
 import pytest
 
 import numpy as np
-from numprops import NumericalProperty
+from numprops import NumericalTrait
 
 from traitlets import HasTraits, TraitError
 
 class TestScalar(HasTraits):
 
-    a = NumericalProperty(ndim=0)
-    b = NumericalProperty(ndim=0, domain='positive')
-    c = NumericalProperty(ndim=0, domain='strictly-positive')
-    d = NumericalProperty(ndim=0, domain='negative')
-    e = NumericalProperty(ndim=0, domain='strictly-negative')
-    f = NumericalProperty(ndim=0, domain=(3, 4))
+    a = NumericalTrait(ndim=0)
+    b = NumericalTrait(ndim=0, domain='positive')
+    c = NumericalTrait(ndim=0, domain='strictly-positive')
+    d = NumericalTrait(ndim=0, domain='negative')
+    e = NumericalTrait(ndim=0, domain='strictly-negative')
+    f = NumericalTrait(ndim=0, domain=(3, 4))
 
     def test_simple(self):
         self.a = 1.
@@ -74,13 +74,13 @@ class TestScalar(HasTraits):
 
 class TestArray(HasTraits):
 
-    a = NumericalProperty(shape=(3,))
-    b = NumericalProperty(domain='positive', ndim=1)
-    c = NumericalProperty(domain='strictly-positive', ndim=1)
-    d = NumericalProperty(domain='negative', ndim=1)
-    e = NumericalProperty(domain='strictly-negative', ndim=1)
-    f = NumericalProperty(domain=(3, 4), ndim=1)
-    g = NumericalProperty(shape=(3, 4))
+    a = NumericalTrait(shape=(3,))
+    b = NumericalTrait(domain='positive', ndim=1)
+    c = NumericalTrait(domain='strictly-positive', ndim=1)
+    d = NumericalTrait(domain='negative', ndim=1)
+    e = NumericalTrait(domain='strictly-negative', ndim=1)
+    f = NumericalTrait(domain=(3, 4), ndim=1)
+    g = NumericalTrait(shape=(3, 4))
 
     def test_simple(self):
         self.a = (1, 2, 3)
@@ -172,8 +172,8 @@ else:
 
     class TestAstropyUnits(HasTraits):
 
-        a = NumericalProperty(convertible_to=u.m)
-        b = NumericalProperty(convertible_to=u.cm / u.s)
+        a = NumericalTrait(convertible_to=u.m)
+        b = NumericalTrait(convertible_to=u.cm / u.s)
 
         def test_valid(self):
 
@@ -221,8 +221,8 @@ else:
 
     class TestPintUnits(HasTraits):
 
-        a = NumericalProperty(convertible_to=ureg.m)
-        b = NumericalProperty(convertible_to=ureg.cm / ureg.s)
+        a = NumericalTrait(convertible_to=ureg.m)
+        b = NumericalTrait(convertible_to=ureg.cm / ureg.s)
 
         def test_valid(self):
 
@@ -275,8 +275,8 @@ else:
 
     class TestQuantitiesUnits(HasTraits):
 
-        a = NumericalProperty(convertible_to=pq.m)
-        b = NumericalProperty(convertible_to=pq.cm / pq.s)
+        a = NumericalTrait(convertible_to=pq.m)
+        b = NumericalTrait(convertible_to=pq.cm / pq.s)
 
         def test_valid(self):
 
@@ -332,14 +332,14 @@ else:
 def test_inconsistent_ndim_shape():
 
     with pytest.raises(TraitError) as exc:
-        a = NumericalProperty(ndim=3, shape=(3, 3))
+        a = NumericalTrait(ndim=3, shape=(3, 3))
     assert exc.value.args[0] == "shape=(3, 3) and ndim=3 are inconsistent"
 
 
 def test_invalid_unit_framework():
 
     with pytest.raises(TraitError) as exc:
-        a = NumericalProperty(convertible_to='m')
+        a = NumericalTrait(convertible_to='m')
     assert exc.value.args[0] == "Could not identify unit framework for target unit of type str"
 
 def test_classes():

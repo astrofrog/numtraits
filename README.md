@@ -33,12 +33,12 @@ class Sphere(object):
 for each property you want to define, you can simply do:
 
 ```python
-from numprops import NumericalProperty
+from numprops import NumericalTrait
 from traitlets import HasTraits
 
 class Sphere(HasTraits):
 
-    radius = NumericalProperty(domain='strictly-positive', ndim=0)
+    radius = NumericalTrait(domain='strictly-positive', ndim=0)
 ```
 
 Support is also included for checking the dimensionality and shape of arrays
@@ -71,16 +71,16 @@ Using
 -----
 
 To create self-validating numerical properties on a class, use the
-``NumericalProperty`` class:
+``NumericalTrait`` class:
 
 ```python
 from traitlets import HasTraits
-from numprops import NumericalProperty
+from numprops import NumericalTrait
 
 class Sphere(HasTraits):
 
-    radius = NumericalProperty(domain='strictly-positive', ndim=0)
-    position = NumericalProperty(shape=(3,))
+    radius = NumericalTrait(domain='strictly-positive', ndim=0)
+    position = NumericalTrait(shape=(3,))
 ```
 
 When a property is set, it will be validated:
@@ -103,7 +103,7 @@ TraitError: position should be a 1-d sequence
 TraitError: position has incorrect length (expected 3 but found 4)
 ```
 
-The following arguments to ``NumericalProperty`` are available:
+The following arguments to ``NumericalTrait`` are available:
 
 * ``ndim``: restrict the values to arrays with this number of dimension
 * ``shape``: restrict the values to arrays with this shape. If specified, ``ndim`` does not need to be given.
@@ -116,14 +116,14 @@ Note that tuples and lists will automatically get converted to Numpy arrays, if 
 Physical units
 --------------
 
-While ``NumericalProperty`` can be used for plain scalars and Numpy arrays, it
+While ``NumericalTrait`` can be used for plain scalars and Numpy arrays, it
 can also be used for scalars and arrays which have associated units, with support for three
 popular unit handling units:
 [astropy.units](docs.astropy.org/en/stable/units/),
 [pint](http://pint.readthedocs.org/), and
 [quantities](https://pythonhosted.org/quantities/).
 
-To restrict a ``NumericalProperty`` to quantities with a certain type of unit,
+To restrict a ``NumericalTrait`` to quantities with a certain type of unit,
 use the ``convertible_to`` option. This option takes units from any of these
 three unit packages, and will ensure that any value passed has units equivalent
 (but not necessarily equal) to those specified with the ``convertible_to``
@@ -149,7 +149,7 @@ The following example shows how to restrict the ``radius`` property to be an
 from astropy import units as u
 
 class Sphere(HasTraits):
-    radius = NumericalProperty(convertible_to=u.m)
+    radius = NumericalTrait(convertible_to=u.m)
 ```
 
 will then behave as follows:
@@ -173,7 +173,7 @@ from pint import UnitRegistry
 ureg = UnitRegistry()
 
 class Sphere(HasTraits):
-    radius = NumericalProperty(convertible_to=ureg.m)
+    radius = NumericalTrait(convertible_to=ureg.m)
 ```
 
 will then behave as follows:
@@ -196,7 +196,7 @@ be a [quantities](https://pythonhosted.org/quantities/) quantity in units of len
 import quantities as pq
 
 class Sphere(HasTraits):
-    radius = NumericalProperty(convertible_to=pq.m)
+    radius = NumericalTrait(convertible_to=pq.m)
 ```
 
 will then behave as follows:
