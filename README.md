@@ -42,7 +42,8 @@ class Sphere(HasTraits):
 ```
 
 The ``NumericalTrait`` class is implemented on top of the [traitlets](https://github.com/ipython/traitlets)
-module.
+module. Any class using ``NumericalTrait`` for the definition of a property **must** derive from the
+``traitlets.HasTraits`` class.
 
 Support is also included for checking the dimensionality and shape of arrays
 (which includes converting tuples and lists to arrays on-the-fly), as well as
