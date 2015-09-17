@@ -51,7 +51,7 @@ checking the units of quantities for the
 Installing
 ----------
 
-This package is compatible with Python 2.6, 2.7, and 3.3 and later, and
+This package is compatible with Python 2.7, 3.3 and later, and
 requires [numpy](http://www.numpy.org) and [traitlets](https://github.com/ipython/traitlets).
 If you are interested in doing unit validation, you will also need
 [astropy](docs.astropy.org/en/stable/units/),
