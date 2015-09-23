@@ -22,7 +22,7 @@ install:
     - if [[ $PYTHON_VERSION == 2.6 ]]; then conda install --yes unittest2; fi
 
 script:
-    - py.test --cov numprops.py
+    - py.test --cov numtraits.py
 
 after_success:
   - coveralls
