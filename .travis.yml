@@ -2,11 +2,9 @@ language: c
 
 env:
   matrix:
-    - PYTHON_VERSION=2.6 UNITPKG=false
     - PYTHON_VERSION=2.7 UNITPKG=false
     - PYTHON_VERSION=3.3 UNITPKG=false
     - PYTHON_VERSION=3.4 UNITPKG=false
-    - PYTHON_VERSION=2.6 UNITPKG=true
     - PYTHON_VERSION=2.7 UNITPKG=true
     - PYTHON_VERSION=3.3 UNITPKG=true
     - PYTHON_VERSION=3.4 UNITPKG=true
@@ -18,7 +16,7 @@ before_install:
 
 install:
     - conda install --yes pip pytest numpy
-    - pip install coveralls pytest-cov
+    - pip install coveralls pytest-cov traitlets
     - if [[ $UNITPKG == true ]]; then conda install --yes astropy; fi
     - if [[ $UNITPKG == true ]]; then pip install quantities pint; fi
     - if [[ $PYTHON_VERSION == 2.6 ]]; then conda install --yes unittest2; fi

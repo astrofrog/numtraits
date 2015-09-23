@@ -25,56 +25,54 @@
 
 from __future__ import print_function
 
+from traitlets import TraitType, TraitError
+
 import numpy as np
 
-from weakref import WeakKeyDictionary
-
-__version__ = '0.2.dev'
+__version__ = '0.2.dev0'
 
 ASTROPY = 'astropy'
 PINT = 'pint'
 QUANTITIES = 'quantities'
 
-
-class NumericalProperty(object):
-
-    def __init__(self, name, ndim=None, shape=None, domain=None,
+class NumericalTrait(TraitType):
+    info_text = 'a numerical trait, either a scalar or a vector'
+    def __init__(self, ndim=None, shape=None, domain=None,
                  default=None, convertible_to=None):
+        super(NumericalTrait, self).__init__()
 
-        self.name = name
-        self.domain = domain
-
-        if shape is not None:
-            if ndim is None:
-                ndim = len(shape)
-            else:
-                if ndim != len(shape):
-                    raise ValueError("shape={0} and ndim={1} for property '{2}' are inconsistent".format(shape, ndim, name))
-
+        # Just store all the construction arguments.
         self.ndim = ndim
         self.shape = shape
-
+        self.domain = domain
+        # TODO: traitlets supports a `default` argument in __init__(), we should
+        # probably link them together once we start using this.
         self.default = default
         self.target_unit = convertible_to
 
-        self.data = WeakKeyDictionary()
+        if self.target_unit is not None:
+            self.unit_framework = identify_unit_framework(self.target_unit)
 
-        if convertible_to is not None:
-            self.unit_framework = identify_unit_framework(convertible_to)
+        # Check the construction arguments.
+        self._check_args()
 
-    def __get__(self, instance, owner):
-        return self.data.get(instance, self.default)
+    def _check_args(self):
+        if self.shape is not None:
+            if self.ndim is None:
+                self.ndim = len(self.shape)
+            else:
+                if self.ndim != len(self.shape):
+                    raise TraitError("shape={0} and ndim={1} are inconsistent".format(self.shape, self.ndim))
 
-    def __set__(self, instance, value):
+    def validate(self, obj, value):
 
         # We proceed by checking whether Numpy tells us the value is a
         # scalar. If Numpy isscalar returns False, it could still be scalar
         # but be a Quantity with units, so we then extract the numerical
         # values
-
         if np.isscalar(value):
             if not np.isreal(value):
-                raise TypeError("{0} should be a numerical value".format(self.name))
+                raise TraitError("{0} should be a numerical value".format(self.name))
             else:
                 is_scalar = True
                 num_value = value
@@ -84,7 +82,7 @@ class NumericalProperty(object):
             try:
                 num_value = np.array(value, copy=False, dtype=float)
             except Exception as exc:
-                raise TypeError("Could not convert value of {0} to a Numpy array (Exception: {1})".format(self.name, exc))
+                raise TraitError("Could not convert value of {0} to a Numpy array (Exception: {1})".format(self.name, exc))
 
             is_scalar = np.isscalar(num_value)
 
@@ -100,22 +98,22 @@ class NumericalProperty(object):
 
             if self.ndim == 0:
                 if not is_scalar:
-                    raise TypeError("{0} should be a scalar value".format(self.name))
+                    raise TraitError("{0} should be a scalar value".format(self.name))
 
             if self.ndim > 0:
                 if is_scalar or num_value.ndim != self.ndim:
                     if self.ndim == 1:
-                        raise TypeError("{0} should be a 1-d sequence".format(self.name))
+                        raise TraitError("{0} should be a 1-d sequence".format(self.name))
                     else:
-                        raise TypeError("{0} should be a {1:d}-d array".format(self.name, self.ndim))
+                        raise TraitError("{0} should be a {1:d}-d array".format(self.name, self.ndim))
 
         if self.shape is not None:
 
             if self.shape is not None and np.any(num_value.shape != self.shape):
                 if self.ndim == 1:
-                    raise ValueError("{0} has incorrect length (expected {1} but found {2})".format(self.name, self.shape[0], num_value.shape[0]))
+                    raise TraitError("{0} has incorrect length (expected {1} but found {2})".format(self.name, self.shape[0], num_value.shape[0]))
                 else:
-                    raise ValueError("{0} has incorrect shape (expected {1} but found {2})".format(self.name, self.shape, num_value.shape))
+                    raise TraitError("{0} has incorrect shape (expected {1} but found {2})".format(self.name, self.shape, num_value.shape))
 
         if self.target_unit is not None:
             assert_unit_convertability(self.name, value, self.target_unit, self.unit_framework)
@@ -127,22 +125,21 @@ class NumericalProperty(object):
 
         if self.domain == 'positive':
             if np.any(num_value < 0.):
-                raise ValueError(prefix + "{0} should be positive".format(self.name))
+                raise TraitError(prefix + "{0} should be positive".format(self.name))
         elif self.domain == 'strictly-positive':
             if np.any(num_value <= 0.):
-                raise ValueError(prefix + "{0} should be strictly positive".format(self.name))
+                raise TraitError(prefix + "{0} should be strictly positive".format(self.name))
         elif self.domain == 'negative':
             if np.any(num_value > 0.):
-                raise ValueError(prefix + "{0} should be negative".format(self.name))
+                raise TraitError(prefix + "{0} should be negative".format(self.name))
         elif self.domain == 'strictly-negative':
             if np.any(num_value >= 0.):
-                raise ValueError(prefix + "{0} should be strictly negative".format(self.name))
+                raise TraitError(prefix + "{0} should be strictly negative".format(self.name))
         elif type(self.domain) in [tuple, list] and len(self.domain) == 2:
             if np.any(num_value < self.domain[0]) or np.any(num_value > self.domain[-1]):
-                raise ValueError(prefix + "{0} should be in the range [{1:g}:{2:g}]".format(self.name, self.domain[0], self.domain[-1]))
+                raise TraitError(prefix + "{0} should be in the range [{1:g}:{2:g}]".format(self.name, self.domain[0], self.domain[-1]))
 
-        self.data[instance] = value
-
+        return value
 
 try:
     import astropy.units
@@ -198,8 +195,7 @@ def identify_unit_framework(target_unit):
 
             return QUANTITIES
 
-    raise ValueError("Could not identify unit framework for target unit of type {0}".format(type(target_unit).__name__))
-
+    raise TraitError("Could not identify unit framework for target unit of type {0}".format(type(target_unit).__name__))
 
 
 def assert_unit_convertability(name, value, target_unit, unit_framework):
@@ -226,27 +222,27 @@ def assert_unit_convertability(name, value, target_unit, unit_framework):
         from astropy.units import Quantity
 
         if not isinstance(value, Quantity):
-            raise TypeError("{0} should be given as an Astropy Quantity instance".format(name))
+            raise TraitError("{0} should be given as an Astropy Quantity instance".format(name))
 
         if not target_unit.is_equivalent(value.unit):
-            raise ValueError("{0} should be in units convertible to {1}".format(name, target_unit))
+            raise TraitError("{0} should be in units convertible to {1}".format(name, target_unit))
 
     elif unit_framework == PINT:
 
         from pint.unit import UnitsContainer
 
         if not (hasattr(value, 'units') and isinstance(value.units, UnitsContainer)):
-            raise TypeError("{0} should be given as a Pint Quantity instance".format(name))
+            raise TraitError("{0} should be given as a Pint Quantity instance".format(name))
 
         if value.dimensionality != target_unit.dimensionality:
-            raise ValueError("{0} should be in units convertible to {1}".format(name, target_unit.units))
+            raise TraitError("{0} should be in units convertible to {1}".format(name, target_unit.units))
 
     elif unit_framework == QUANTITIES:
 
         from quantities import Quantity
 
         if not isinstance(value, Quantity):
-            raise TypeError("{0} should be given as a quantities Quantity instance".format(name))
+            raise TraitError("{0} should be given as a quantities Quantity instance".format(name))
 
         if value.dimensionality.simplified != target_unit.dimensionality.simplified:
-            raise ValueError("{0} should be in units convertible to {1}".format(name, target_unit.dimensionality.string))
+            raise TraitError("{0} should be in units convertible to {1}".format(name, target_unit.dimensionality.string))
