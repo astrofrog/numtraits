@@ -29,7 +29,7 @@ from traitlets import TraitType, TraitError
 
 import numpy as np
 
-__version__ = '0.2.dev0'
+__version__ = '0.2'
 
 ASTROPY = 'astropy'
 PINT = 'pint'

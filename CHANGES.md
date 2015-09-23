@@ -1,4 +1,4 @@
-0.2 (unreleased)
+0.2 (2015-09-23)
 ----------------
 
 - Implement on top of the traitlets module.
