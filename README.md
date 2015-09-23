@@ -1,7 +1,7 @@
 Numerical properties for Python objects
 =======================================
 
-[![Travis Build Status](https://travis-ci.org/astrofrog/numtraits.svg?branch=master)](https://travis-ci.org/astrofrog/numtraits) [![Coverage Status](https://coveralls.io/repos/astrofrog/numtraits/badge.svg)](https://coveralls.io/r/astrofrog/numtraits)
+[![Travis Build Status](https://travis-ci.org/astrofrog/numtraits.svg?branch=master)](https://travis-ci.org/astrofrog/numtraits) [![Coverage Status](https://coveralls.io/repos/astrofrog/numtraits/badge.svg?branch=master&service=github)](https://coveralls.io/github/astrofrog/numtraits?branch=master)
 
 **Please note:** this package is experimental and may still see some changes to the API. If you have any suggestions for improving the API, please open an issue!
 
