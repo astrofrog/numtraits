@@ -1,6 +1,6 @@
 from setuptools import setup
 
-from numprops import __version__
+from numtraits import __version__
 
 try:
     import pypandoc
@@ -11,11 +11,11 @@ except (IOError, ImportError):
 
 setup(
     version=__version__,
-    url="https://github.com/astrofrog/numprops",
-    name="numprops",
+    url="https://github.com/astrofrog/numtraits",
+    name="numtraits",
     description='Numerical traits for Python objects',
     long_description=long_description,
-    py_modules=['numprops'],
+    py_modules=['numtraits'],
     license='BSD',
     author='Thomas Robitaille',
     author_email='thomas.robitaille@gmail.com',

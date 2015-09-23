@@ -1,7 +1,7 @@
 Numerical properties for Python objects
 =======================================
 
-[![Travis Build Status](https://travis-ci.org/astrofrog/numprops.svg?branch=master)](https://travis-ci.org/astrofrog/numprops) [![Coverage Status](https://coveralls.io/repos/astrofrog/numprops/badge.svg)](https://coveralls.io/r/astrofrog/numprops)
+[![Travis Build Status](https://travis-ci.org/astrofrog/numtraits.svg?branch=master)](https://travis-ci.org/astrofrog/numtraits) [![Coverage Status](https://coveralls.io/repos/astrofrog/numtraits/badge.svg)](https://coveralls.io/r/astrofrog/numtraits)
 
 **Please note:** this package is experimental and may still see some changes to the API. If you have any suggestions for improving the API, please open an issue!
 
@@ -33,7 +33,7 @@ class Sphere(object):
 for each property you want to define, you can simply do:
 
 ```python
-from numprops import NumericalTrait
+from numtraits import NumericalTrait
 from traitlets import HasTraits
 
 class Sphere(HasTraits):
@@ -65,9 +65,9 @@ framework you normally use.
 
 To install, you can do:
 
-    pip install numprops
+    pip install numtraits
 
-You can also bundle ``numprops.py`` into your package if you want to avoid
+You can also bundle ``numtraits.py`` into your package if you want to avoid
 using an external dependency, but please be sure to keep the copyright and the
 license in the file.
 
@@ -79,7 +79,7 @@ To create self-validating numerical properties on a class, use the
 
 ```python
 from traitlets import HasTraits
-from numprops import NumericalTrait
+from numtraits import NumericalTrait
 
 class Sphere(HasTraits):
 
