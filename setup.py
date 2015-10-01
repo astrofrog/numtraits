@@ -1,13 +1,18 @@
 from setuptools import setup
+import re
 
-from numtraits import __version__
+def read(filename):
+    with open(filename) as f:
+        return f.read()
+
+__version__ = re.search(r'^__version__ = ([\'"])(?P<version>.*)\1$',
+                        read('numtraits.py'), re.M).groupdict()['version']
 
 try:
     import pypandoc
     long_description = pypandoc.convert('README.md', 'rst')
 except (IOError, ImportError):
-    with open('README.md') as infile:
-        long_description = infile.read()
+    long_description = read('README.md')
 
 setup(
     version=__version__,
