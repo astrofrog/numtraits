@@ -182,7 +182,7 @@ def identify_unit_framework(target_unit):
 
         from pint.unit import UnitsContainer
 
-        if hasattr(target_unit, 'units') and isinstance(target_unit.units, UnitsContainer):
+        if hasattr(target_unit, 'dimensionality') and isinstance(target_unit.dimensionality, UnitsContainer):
 
             return PINT
 
@@ -231,11 +231,11 @@ def assert_unit_convertability(name, value, target_unit, unit_framework):
 
         from pint.unit import UnitsContainer
 
-        if not (hasattr(value, 'units') and isinstance(value.units, UnitsContainer)):
+        if not (hasattr(value, 'dimensionality') and isinstance(value.dimensionality, UnitsContainer)):
             raise TraitError("{0} should be given as a Pint Quantity instance".format(name))
 
         if value.dimensionality != target_unit.dimensionality:
-            raise TraitError("{0} should be in units convertible to {1}".format(name, target_unit.units))
+            raise TraitError("{0} should be in units convertible to {1}".format(name, target_unit))
 
     elif unit_framework == QUANTITIES:
 
