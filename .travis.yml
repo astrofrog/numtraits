@@ -5,21 +5,19 @@ env:
     - PYTHON_VERSION=2.7 UNITPKG=false
     - PYTHON_VERSION=3.3 UNITPKG=false
     - PYTHON_VERSION=3.4 UNITPKG=false
+    - PYTHON_VERSION=3.5 UNITPKG=false
     - PYTHON_VERSION=2.7 UNITPKG=true
-    - PYTHON_VERSION=3.3 UNITPKG=true
     - PYTHON_VERSION=3.4 UNITPKG=true
-
-before_install:
-    - source .continuous-integration/travis/setup_environment_$TRAVIS_OS_NAME.sh
-    - conda create --yes -n test python=$PYTHON_VERSION
-    - source activate test
+    - PYTHON_VERSION=3.5 UNITPKG=true
+  global:
+    - CONDA_DEPENDENCIES="pytest numpy"
+    - PIP_DEPENDENCIES="coveralls pytest-cov traitlets"
 
 install:
-    - conda install --yes pip pytest numpy
-    - pip install coveralls pytest-cov traitlets
-    - if [[ $UNITPKG == true ]]; then conda install --yes astropy; fi
-    - if [[ $UNITPKG == true ]]; then pip install quantities pint; fi
-    - if [[ $PYTHON_VERSION == 2.6 ]]; then conda install --yes unittest2; fi
+    - if [[ $UNITPKG == true ]]; then export CONDA_DEPENDENCIES="astropy "$CONDA_DEPENDENCIES; fi
+    - if [[ $UNITPKG == true ]]; then export PIP_DEPENDENCIES="quantities pint "$PIP_DEPENDENCIES; fi
+    - git clone git://github.com/astropy/ci-helpers.git
+    - source ci-helpers/travis/setup_conda_$TRAVIS_OS_NAME.sh
 
 script:
     - py.test --cov numtraits.py
